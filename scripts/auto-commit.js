@@ -12,14 +12,6 @@ const run = (cmd, options = {}) =>
     ...options,
   }).trim();
 
-const safeExec = (cmd) => {
-  try {
-    return run(cmd);
-  } catch (error) {
-    return null;
-  }
-};
-
 const args = process.argv.slice(2);
 const flags = args.reduce((acc, arg) => {
   const [key, value] = arg.split('=');
@@ -149,10 +141,9 @@ const main = () => {
 
     const stagedFiles = stageAll();
     const commitTitle = flags.message || formatTitle(stagedFiles);
-    log('flags', JSON.stringify(flags))
+
     if (flags.dryRun) {
       log('[dry-run] Would commit with title:', commitTitle);
-      log('[dry-run] Would push to origin');
       return;
     }
 
