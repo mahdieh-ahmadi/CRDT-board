@@ -65,14 +65,6 @@ const verifyAuth = (authMode) => {
       `Authentication check failed for ${authMode}. Confirm access and try again.`
     );
   }
-
-
-  /* const result = safeExec('git ls-remote --exit-code --heads origin HEAD');
-  if (!result) {
-    throw new Error(
-      `Authentication check failed for ${authMode}. Confirm access and try again.`
-    );
-  } */
 };
 
 const classifyFile = (filePath) => {
@@ -157,7 +149,7 @@ const main = () => {
 
     const stagedFiles = stageAll();
     const commitTitle = flags.message || formatTitle(stagedFiles);
-
+    log('flags', JSON.stringify(flags))
     if (flags.dryRun) {
       log('[dry-run] Would commit with title:', commitTitle);
       log('[dry-run] Would push to origin');
