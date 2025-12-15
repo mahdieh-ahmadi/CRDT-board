@@ -15,7 +15,7 @@ CRDT Board is a collaborative, real-time web application that lets multiple user
 - **Presence & cursors:** (Optional) show who is online and where collaborators are pointing.
 - **Persistent state:** Board contents can be persisted to a server or peer network depending on your chosen backend.
 
-**Tech stack (example)**
+**Tech stack (example)** 
 
 - **Framework:** Next.js (React)
 - **CRDT:** pluggable CRDT library (e.g., yjs or utomerge)

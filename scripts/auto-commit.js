@@ -55,12 +55,24 @@ const detectAuthMode = (remoteUrl) => {
 
 const verifyAuth = (authMode) => {
   log(`Verifying ${authMode.toUpperCase()} authentication...`);
-  const result = safeExec('git ls-remote --exit-code --heads origin HEAD');
-  if (!result) {
+
+  try {
+    // Run the command; execSync throws on non-zero exit code
+    execSync('git ls-remote --exit-code origin HEAD', { stdio: 'ignore' });
+    console.log(`${authMode} authentication verified ✅`);
+  } catch (err) {
     throw new Error(
       `Authentication check failed for ${authMode}. Confirm access and try again.`
     );
   }
+
+
+  /* const result = safeExec('git ls-remote --exit-code --heads origin HEAD');
+  if (!result) {
+    throw new Error(
+      `Authentication check failed for ${authMode}. Confirm access and try again.`
+    );
+  } */
 };
 
 const classifyFile = (filePath) => {
