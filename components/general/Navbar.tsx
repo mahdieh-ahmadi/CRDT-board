@@ -1,8 +1,15 @@
+'use client'
+
 import Link from "next/link";
 import { Button } from "./Button";
 import { Container } from "./Container";
+import { usePathname } from "next/navigation";
+import { Avatar } from "./Avatar";
+import { UserAvatar } from "@clerk/nextjs";
 
 export function Navbar() {
+  const pathname = usePathname()
+
   return (
     <header className="sticky top-0 z-20 border-b border-zinc-200/60 bg-white/80 backdrop-blur dark:border-zinc-800/60 dark:bg-black/80">
       <Container className="flex items-center justify-between py-4">
@@ -27,9 +34,9 @@ export function Navbar() {
           </Link>
         </nav>
         <div className="flex items-center gap-3">
-          <Button href="/dashboard" size="sm">
+          {pathname === '/' ? <Button href="/dashboard" size="sm">
             Go to dashboard
-          </Button>
+          </Button> : <Link href={'/profile'}><UserAvatar rounded /></Link>}
         </div>
       </Container>
     </header>

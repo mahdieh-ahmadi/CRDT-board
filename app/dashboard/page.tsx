@@ -1,18 +1,20 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/general/Button";
 import { Container } from "@/components/general/Container";
 import { Navbar } from "@/components/general/Navbar";
-import Link from "next/link";
+import { Modal } from "@/components/general/Modal";
 
 type Board = {
     title: string;
     lastModified: string;
     shared: boolean;
     lastViewedDaysAgo: number;
-    previewImageUrl?: string
-    id: string | number
+    previewImageUrl?: string;
+    id: string | number;
 };
 
 const boards: Board[] = [
@@ -21,28 +23,28 @@ const boards: Board[] = [
         lastModified: "2025-02-04",
         shared: true,
         lastViewedDaysAgo: 1,
-        id: ""
+        id: "product-roadmap-q1"
     },
     {
         title: "Research synthesis",
         lastModified: "2025-01-28",
         shared: true,
         lastViewedDaysAgo: 3,
-        id: ""
+        id: "research-synthesis"
     },
     {
         title: "Engineering retro",
         lastModified: "2025-01-18",
         shared: false,
         lastViewedDaysAgo: 9,
-        id: ""
+        id: "engineering-retro"
     },
     {
         title: "Growth experiments",
         lastModified: "2024-12-12",
         shared: false,
         lastViewedDaysAgo: 30,
-        id: ""
+        id: "growth-experiments"
     },
 ];
 
@@ -50,6 +52,9 @@ type Filter = "recent" | "shared" | "all";
 
 export default function Dashboard() {
     const [filter, setFilter] = useState<Filter>("recent");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newBoardName, setNewBoardName] = useState("");
+    const router = useRouter();
 
     const filteredBoards = useMemo(() => {
         return boards.filter((board) => {
@@ -59,6 +64,18 @@ export default function Dashboard() {
             return board.lastViewedDaysAgo <= 14;
         });
     }, [filter]);
+
+    const handleCreate = () => {
+        const name = newBoardName.trim();
+        if (!name) return;
+        const id =
+            typeof crypto !== "undefined" && "randomUUID" in crypto
+                ? crypto.randomUUID()
+                : Date.now().toString();
+        setIsModalOpen(false);
+        setNewBoardName("");
+        router.push(`/board?id=${encodeURIComponent(id)}&name=${encodeURIComponent(name)}`);
+    };
 
     return (
         <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-black dark:text-white">
@@ -72,7 +89,7 @@ export default function Dashboard() {
                                 Pick a board to jump back in or create a new one.
                             </p>
                         </div>
-                        <Button href="/dashboard/new">New board</Button>
+                        <Button onClick={() => setIsModalOpen(true)}>New board</Button>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
@@ -87,7 +104,7 @@ export default function Dashboard() {
                                     key={key}
                                     onClick={() => setFilter(key as Filter)}
                                     className={[
-                                        "rounded-full border px-4 py-2 text-sm transition",
+                                        "rounded-full border px-4 py-2 text-sm transition cursor-pointer",
                                         active
                                             ? "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-black"
                                             : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900",
@@ -140,6 +157,31 @@ export default function Dashboard() {
                     </div>
                 </Container>
             </main>
+
+            <Modal
+                open={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title="Create a new board"
+                primaryAction={{
+                    label: "Create",
+                    onClick: handleCreate,
+                    disabled: !newBoardName.trim(),
+                }}
+                secondaryAction={{
+                    label: "Cancel",
+                    onClick: () => setIsModalOpen(false),
+                }}
+            >
+                <label className="space-y-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                    Board name
+                    <input
+                        value={newBoardName}
+                        onChange={(e) => setNewBoardName(e.target.value)}
+                        placeholder="e.g. Growth strategy"
+                        className="mt-2 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white dark:focus:border-zinc-600 dark:focus:ring-zinc-800"
+                    />
+                </label>
+            </Modal>
         </div>
     );
 }
